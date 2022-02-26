@@ -8,10 +8,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private Button trueButton;
     private Button falseButton;
+    private Button previousButton;
     private Button nextButton;
     private TextView questionTextView;
 
@@ -33,6 +35,15 @@ public class MainActivity extends AppCompatActivity {
 
         questionTextView = (TextView) findViewById(R.id.question_text_view);
 
+
+        previousButton = (Button) findViewById(R.id.previous_button);
+        previousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentIndex = (currentIndex - 1) % questionBank.length;
+                updateQuestion();
+            }
+        });
 
         nextButton = (Button) findViewById(R.id.next_button);
         nextButton.setOnClickListener(new View.OnClickListener() {
