@@ -2,6 +2,8 @@ package android.example.quizg;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,11 +16,13 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final String KEY_INDEX = "index";
+    private static final int REQUEST_CODE_CHEAT = 0;
 
     private Button trueButton;
     private Button falseButton;
     private Button previousButton;
     private Button nextButton;
+    private Button cheatButton;
     private TextView questionTextView;
 
     private Question[] questionBank = new Question[] {
@@ -31,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private int currentIndex = 0;
+    private boolean isCheater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,15 @@ public class MainActivity extends AppCompatActivity {
 
         questionTextView = (TextView) findViewById(R.id.question_text_view);
 
+        cheatButton = (Button) findViewById(R.id.cheat_button);
+        cheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean answerIsTrue = questionBank[currentIndex].isAnswerTrue();
+                Intent intent = CheatActivity.newIntent(MainActivity.this, answerIsTrue);
+                startActivityForResult(intent, REQUEST_CODE_CHEAT);
+            }
+        });
 
         previousButton = (Button) findViewById(R.id.previous_button);
         previousButton.setOnClickListener(new View.OnClickListener() {
@@ -58,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 currentIndex = (currentIndex + 1 ) % questionBank.length;
+                isCheater = false;
                 updateQuestion();
             }
         });
@@ -82,6 +97,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+        if (requestCode == REQUEST_CODE_CHEAT) {
+            if (data == null) {
+                return;
+            }
+            isCheater = CheatActivity.wasAnswerShown(data);
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle savedInstanceState){
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
@@ -98,10 +127,14 @@ public class MainActivity extends AppCompatActivity {
 
         int messageResId = 0;
 
-        if(userPressedTrue == answerIsTrue){
-            messageResId = R.string.correct_toast;
-        }else{
-            messageResId = R.string.incorrect_toast;
+        if(isCheater){
+            messageResId = R.string.judgement_toast;
+        }else {
+            if (userPressedTrue == answerIsTrue) {
+                messageResId = R.string.correct_toast;
+            } else {
+                messageResId = R.string.incorrect_toast;
+            }
         }
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
     }

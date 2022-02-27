@@ -6,6 +6,10 @@
     <string name="question_africa">The source of the Nile river is in Egypt</string>
     <string name="question_america">The Amazon river is the biggest river in the America</string>
     <string name="question_asia">The lake Baikal is the world oldest and deepest freshwater lake </string>
+    <string name="warning_text">Are you sure you want to do this?</string>
+    <string name="show_answer_button">Show Answer</string>
+    <string name="judgement_toast">Cheating is wrong</string>
+    <string name="cheat_button">Cheat!</string>
     <string name="false_button">False</string>
     <string name="true_button">True</string>
     <string name="correct_toast">Correct!</string>
